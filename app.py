@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_socketio import SocketIO, emit, join_room
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -8,6 +9,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+socketio = SocketIO(app)
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -89,6 +92,22 @@ def edit_document(doc_id):
         db.session.commit()
         return redirect(url_for('documents'))
     return render_template('edit_document.html', document=document)
+
+@socketio.on('join')
+def on_join(data):
+    room = data['room']
+    join_room(room)
+
+@socketio.on('edit')
+def on_edit(data):
+    room = data['room']
+    emit('update_content', data, room=room, include_self=False)
+
+@app.route('/collaborate/<int:doc_id>')
+@login_required
+def collaborate(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    return render_template('collaborate.html', document=document, room=doc_id)
 
 if __name__ == '__main__':
     db.create_all()

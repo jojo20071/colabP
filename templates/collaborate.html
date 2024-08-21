@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborate on {{ document.title }}</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Collaborate on {{ document.title }}</h1>
+    <textarea id="content">{{ document.content }}</textarea>
+    <script>
+        const socket = io();
+        const room = "{{ room }}";
+        socket.emit('join', {room: room});
+
+        const textarea = document.getElementById('content');
+        textarea.addEventListener('input', () => {
+            socket.emit('edit', {room: room, content: textarea.value});
+        });
+
+        socket.on('update_content', (data) => {
+            textarea.value = data.content;
+        });
+    </script>
+</body>
+</html>
