@@ -139,6 +139,23 @@ def profile():
         return redirect(url_for('profile'))
     return render_template('profile.html')
 
+class DocumentShare(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey('document.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+@app.route('/share_document/<int:doc_id>', methods=['GET', 'POST'])
+@login_required
+def share_document(doc_id):
+    if request.method == 'POST':
+        username = request.form.get('username')
+        user = User.query.filter_by(username=username).first()
+        if user:
+            new_share = DocumentShare(document_id=doc_id, user_id=user.id)
+            db.session.add(new_share)
+            db.session.commit()
+        return redirect(url_for('documents'))
+    return render_template('share_document.html')
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
