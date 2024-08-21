@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Documents</title>
+</head>
+<body>
+    <h1>Your Documents</h1>
+    <ul>
+        {% for doc in documents %}
+            <li>{{ doc.title }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('create_document') }}">Create New Document</a>
+</body>
+</html>

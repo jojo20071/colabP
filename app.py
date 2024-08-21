@@ -55,6 +55,30 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+class Document(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+@app.route('/create_document', methods=['GET', 'POST'])
+@login_required
+def create_document():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        new_document = Document(title=title, content=content, user_id=current_user.id)
+        db.session.add(new_document)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    return render_template('create_document.html')
+
+@app.route('/documents')
+@login_required
+def documents():
+    user_documents = Document.query.filter_by(user_id=current_user.id).all()
+    return render_template('documents.html', documents=user_documents)
+
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
