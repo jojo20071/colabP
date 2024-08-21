@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_socketio import SocketIO, emit, join_room
+from flask import jsonify
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
@@ -186,7 +187,17 @@ def notify_users(document):
         new_notification = Notification(user_id=share.user_id, message=f"Document '{document.title}' was updated.")
         db.session.add(new_notification)
         db.session.commit()
-        
+
+@app.route('/search', methods=['GET'])
+@login_required
+def search():
+    query = request.args.get('query')
+    search_results = Document.query.filter(
+        Document.user_id == current_user.id,
+        (Document.title.contains(query)) | (Document.content.contains(query))
+    ).all()
+    return jsonify([{'id': doc.id, 'title': doc.title} for doc in search_results])
+
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)

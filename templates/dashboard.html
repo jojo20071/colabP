@@ -9,5 +9,32 @@
 <body>
     <h1>Dashboard</h1>
     <a href="{{ url_for('logout') }}">Logout</a>
+    <input type="text" id="search-input" class="form-control mb-3" placeholder="Search documents...">
+<ul id="search-results" class="list-group"></ul>
+
+<script>
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value;
+        if (query) {
+            fetch(`/search?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.innerHTML = '';
+                    data.forEach(doc => {
+                        const li = document.createElement('li');
+                        li.textContent = doc.title;
+                        li.classList.add('list-group-item');
+                        li.onclick = () => window.location.href = `/edit_document/${doc.id}`;
+                        searchResults.appendChild(li);
+                    });
+                });
+        } else {
+            searchResults.innerHTML = '';
+        }
+    });
+</script>
 </body>
 </html>
