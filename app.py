@@ -109,6 +109,27 @@ def collaborate(doc_id):
     document = Document.query.get_or_404(doc_id)
     return render_template('collaborate.html', document=document, room=doc_id)
 
+class DocumentVersion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey('document.id'))
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+@app.route('/versions/<int:doc_id>')
+@login_required
+def versions(doc_id):
+    document_versions = DocumentVersion.query.filter_by(document_id=doc_id).all()
+    return render_template('versions.html', versions=document_versions)
+
+@app.route('/save_version/<int:doc_id>', methods=['POST'])
+@login_required
+def save_version(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    new_version = DocumentVersion(document_id=doc_id, content=document.content)
+    db.session.add(new_version)
+    db.session.commit()
+    return redirect(url_for('collaborate', doc_id=doc_id))
+
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
