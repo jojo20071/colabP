@@ -156,6 +156,37 @@ def share_document(doc_id):
             db.session.commit()
         return redirect(url_for('documents'))
     return render_template('share_document.html')
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    message = db.Column(db.String(250), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+
+@app.route('/notifications')
+@login_required
+def notifications():
+    user_notifications = Notification.query.filter_by(user_id=current_user.id).all()
+    return render_template('notifications.html', notifications=user_notifications)
+
+@socketio.on('edit')
+def on_edit(data):
+    room = data['room']
+    emit('update_content', data, room=room, include_self=False)
+    document = Document.query.get(room)
+    notify_users(document)
+
+def notify_users(document):
+    owner = User.query.get(document.user_id)
+    new_notification = Notification(user_id=owner.id, message=f"Document '{document.title}' was updated.")
+    db.session.add(new_notification)
+    db.session.commit()
+    shared_users = DocumentShare.query.filter_by(document_id=document.id).all()
+    for share in shared_users:
+        new_notification = Notification(user_id=share.user_id, message=f"Document '{document.title}' was updated.")
+        db.session.add(new_notification)
+        db.session.commit()
+        
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)

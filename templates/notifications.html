@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+</head>
+<body class="container">
+    <h1 class="text-center mt-5">Notifications</h1>
+    <ul class="list-group w-50 mx-auto">
+        {% for notification in notifications %}
+            <li class="list-group-item {{ 'list-group-item-success' if notification.is_read else '' }}">
+                {{ notification.message }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
