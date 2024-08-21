@@ -130,6 +130,15 @@ def save_version(doc_id):
     db.session.commit()
     return redirect(url_for('collaborate', doc_id=doc_id))
 
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        current_user.username = request.form.get('username')
+        db.session.commit()
+        return redirect(url_for('profile'))
+    return render_template('profile.html')
+
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)

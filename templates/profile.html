@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+</head>
+<body class="container">
+    <h1 class="text-center mt-5">Profile</h1>
+    <form method="POST" class="w-50 mx-auto mt-4">
+        <div class="mb-3">
+            <input type="text" name="username" class="form-control" value="{{ current_user.username }}">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Save</button>
+    </form>
+</body>
+</html>
