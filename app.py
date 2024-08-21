@@ -79,6 +79,17 @@ def documents():
     user_documents = Document.query.filter_by(user_id=current_user.id).all()
     return render_template('documents.html', documents=user_documents)
 
+@app.route('/edit_document/<int:doc_id>', methods=['GET', 'POST'])
+@login_required
+def edit_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    if request.method == 'POST':
+        document.title = request.form.get('title')
+        document.content = request.form.get('content')
+        db.session.commit()
+        return redirect(url_for('documents'))
+    return render_template('edit_document.html', document=document)
+
 if __name__ == '__main__':
     db.create_all()
     app.run(debug=True)
