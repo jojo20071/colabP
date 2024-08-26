@@ -17,7 +17,7 @@ A web-based platform built with Python and Flask that allows users to collaborat
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/collaborative-document-platform.git
+   git clone https://github.com/jojo20071/colabP
    cd collaborative-document-platform
    ```
 
