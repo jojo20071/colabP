@@ -2,6 +2,7 @@
 # Collaborative Document Editing Platform
 
 A web-based platform built with Python and Flask that allows users to collaborate on documents in real-time. This platform features user authentication, document creation, sharing, versioning, and real-time editing with multiple collaborators.
+![image](https://github.com/user-attachments/assets/24b7ef39-17f2-4c48-bba7-8e1b7a28d99f)
 
 ## Features
 
